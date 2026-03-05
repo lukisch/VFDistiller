@@ -2,6 +2,8 @@
 
 Bioinformatisches Desktop-Tool zur Verarbeitung, Konvertierung und Annotation genetischer Variantendaten. Unterstuetzt VCF, gVCF, 23andMe-Rohdaten und FASTA — ohne pysam/bcftools/samtools (Windows-kompatibel).
 
+![Variant Fusion - Hauptansicht](README/screenshots/main_view.png)
+
 ## Features
 
 - **Multi-Format-Import** — VCF, gVCF, 23andMe (.txt), FASTA (.fa/.fasta)

@@ -73,6 +73,9 @@ dist/
 build/
 _OUTPUT EXE/
 releases/
+# Sensible Store-Daten (doppelt gesichert):
+store_identity.json
+store_settings.json
 
 # ---------------------------------------------------------------------------
 # Archiv- und Wartungsversionen (nicht fuer GitHub)
