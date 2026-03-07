@@ -12,9 +12,9 @@ A bioinformatics desktop tool for processing, converting, and annotating genetic
 - **INFO Recycling** — Existing VCF annotations are reused
 - **Filtering** — AF threshold, CADD score, Variant Impact, ClinSig, gene lists, FILTER=PASS, Read Depth
 - **Export** — CSV, Excel, PDF, annotated VCF (filtered or complete)
-- **GUI** — ttkbootstrap interface with system tray, progress bar, themes
-- **Performance** — Optional Cython hotpath (5x overall speedup), SQLite batch writes, async HTTP via aiohttp
-- **Background Maintenance** — Automatic reloading of missing annotations during idle time
+- **GUI** — ttkbootstrap interface with System Tray, progress indicator, themes
+- **Performance** — Optional Cython hot-path (5x overall speedup), SQLite batch writes, async HTTP via aiohttp
+- **Background Maintenance** — Automatic re-fetching of missing annotations during idle
 - **Multilingual** — German and English (JSON-based translations)
 
 ## Prerequisites
@@ -49,7 +49,7 @@ wget https://ftp.ensembl.org/pub/release-112/fasta/homo_sapiens/dna/Homo_sapiens
 gunzip Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
 ```
 
-Place the files in the project directory. A `.fai` index is automatically generated on first launch.
+Place the files in the project directory. On first launch, a `.fai` index is automatically generated.
 
 ### gnomAD LightDB (optional)
 
@@ -87,17 +87,17 @@ On first launch, `variant_fusion_settings.json` is created from the template `va
 
 | Setting | Description | Default |
 |---|---|---|
-| `af_threshold` | Allele Frequency threshold | 0.007 |
+| `af_threshold` | Allele frequency threshold | 0.007 |
 | `include_none` | Show variants without AF | false |
 | `cadd_highlight_threshold` | CADD score highlighting | 22.0 |
 | `stale_days` | Days until AF refresh | 200 |
-| `alphagenome_key` | Google AlphaGenome API key | (empty) |
+| `alphagenom_key` | Google AlphaGenome API key | (empty) |
 | `quality_settings` | VCF record-level filter | see example |
 
 ### API Keys
 
-- **AlphaGenome:** Requires a Google AI API key. Enter in `variant_fusion_settings.json` under `alphagenome_key` and `api_settings.phase6_ag.alphagenome.api_key`.
-- **NCBI:** Optional for higher rate limits. Enter under `api_settings.global.ncbi_api_key`.
+- **AlphaGenome**: Requires a Google AI API key. Enter in `variant_fusion_settings.json` under `alphagenom_key` and `api_settings.phase6_ag.alphagenom.api_key`.
+- **NCBI**: Optional for higher rate limits. Enter under `api_settings.global.ncbi_api_key`.
 
 ## Dependencies
 
@@ -110,7 +110,7 @@ On first launch, `variant_fusion_settings.json` is created from the template `va
 | Pillow | PIL License | Icon/Image processing |
 | intervaltree | Apache 2.0 | Genomic intervals |
 | ttkbootstrap | MIT | Modern GUI themes |
-| pystray | MIT | System tray icon |
+| pystray | MIT | System Tray icon |
 | aiohttp | Apache 2.0 | Async HTTP fetching |
 | scipy | BSD | Statistics |
 
@@ -127,7 +127,7 @@ On first launch, `variant_fusion_settings.json` is created from the template `va
 
 ## Cython Acceleration
 
-Optional C-compiled hot paths for critical operations:
+Optional C-compiled hot-paths for critical operations:
 
 | Module | Speedup | Function |
 |---|---|---|
@@ -148,11 +148,11 @@ VFDistiller/
 ├── requirements.txt ............. Python dependencies
 ├── variant_fusion_settings.json.example . Configuration template
 ├── VFDistiller.spec ............. PyInstaller build configuration
-├── START.bat .................... Windows quick start
+├── START.bat .................... Windows quick-start
 │
 ├── cython_hotpath/ .............. Optional Cython modules
 │   ├── __init__.py .............. CythonAccelerator main class
-│   ├── vcf_parser.pyx ........... VCF parsing
+│   ├── vcf_parser.pyx .......... VCF parsing
 │   ├── af_validator.pyx ......... AF validation
 │   ├── key_normalizer.pyx ....... Key normalization
 │   ├── fasta_lookup.pyx ......... FASTA lookup
@@ -160,7 +160,7 @@ VFDistiller/
 │   └── test_performance.py ...... Benchmarks
 │
 ├── data/annotations/ ............ Gene annotation data
-│   ├── GRCh37.gtf.gz ............ Ensembl gene annotations
+│   ├── GRCh37.gtf.gz ........... Ensembl gene annotations
 │   └── GRCh38.gtf.gz
 │
 ├── locales/
@@ -168,7 +168,7 @@ VFDistiller/
 │
 ├── ICO/ICO.ico .................. App icon
 │
-├── lightdb_index_worker.py ....... gnomAD LightDB background indexing
+├── lightdb_index_worker.py ...... gnomAD LightDB background indexing
 ├── translator.py ................ Translation engine
 ├── translator_patch.py .......... Translation patches
 ├── manage_translations.py ....... Translation management
@@ -178,7 +178,7 @@ VFDistiller/
 ├── ARCHITECTURE.md .............. Developer documentation
 └── README/ ...................... Extended documentation & licenses
     └── licenses/
-        ├── LICENSE.txt ........... Main license (English)
+        ├── LICENSE.txt .......... Main license (English)
         ├── LICENSE.de.txt ....... Main license (German)
         └── THIRD_PARTY_LICENSES.txt . Third-party licenses
 ```
@@ -188,10 +188,10 @@ VFDistiller/
 **VFDistiller License v1.0** — Free to use, modification allowed, no resale. See [LICENSE](LICENSE) for details.
 
 - Use for research, education, and personal purposes: **allowed**
-- Modification and customization of the source code: **allowed**
-- Distribution within your own organization: **allowed**
+- Modification and adaptation of source code: **allowed**
+- Redistribution within your own organization: **allowed**
 - Resale or commercial redistribution: **prohibited**
-- This license applies to V17.x — subsequent versions may have different terms
+- This license applies to V17.x — successor versions may have different terms
 
 The software is not medically validated and must not be used for clinical diagnoses or therapeutic decisions.
 
@@ -205,4 +205,4 @@ V17.0 — Current production version (March 2026).
 
 ---
 
-Deutsche Version: [README.de.md](README.de.md)
+🇩🇪 [Deutsche Version](README.de.md)
