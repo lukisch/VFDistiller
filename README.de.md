@@ -91,12 +91,12 @@ Beim ersten Start wird `variant_fusion_settings.json` aus der Vorlage `variant_f
 | `include_none` | Varianten ohne AF anzeigen | false |
 | `cadd_highlight_threshold` | CADD-Score-Hervorhebung | 22.0 |
 | `stale_days` | Tage bis AF-Refresh | 200 |
-| `alphagenome_key` | Google AlphaGenome API-Key | (leer) |
+| `alphagenom_key` | Google AlphaGenome API-Key | (leer) |
 | `quality_settings` | VCF-Record-Level Filter | siehe Example |
 
 ### API-Keys
 
-- **AlphaGenome**: Erfordert einen Google AI API-Key. In `variant_fusion_settings.json` unter `alphagenome_key` und `api_settings.phase6_ag.alphagenome.api_key` eintragen.
+- **AlphaGenome**: Erfordert einen Google AI API-Key. In `variant_fusion_settings.json` unter `alphagenom_key` und `api_settings.phase6_ag.alphagenom.api_key` eintragen.
 - **NCBI**: Optional fuer hoehere Rate-Limits. Unter `api_settings.global.ncbi_api_key` eintragen.
 
 ## Dependencies
@@ -140,7 +140,6 @@ Gesamt-Pipeline-Speedup: ~5x (50k Varianten: 15 min -> 3 min).
 
 Wenn Cython nicht installiert ist, werden automatisch Python-Fallbacks verwendet.
 
-
 ## Projektstruktur
 
 ```
@@ -160,14 +159,14 @@ VFDistiller/
 │   ├── setup.py ................. Build-Script
 │   └── test_performance.py ...... Benchmarks
 │
-├── data/annotations/ ............. Gen-Annotationsdaten
+├── data/annotations/ ............ Gen-Annotationsdaten
 │   ├── GRCh37.gtf.gz ........... Ensembl Gene-Annotationen
 │   └── GRCh38.gtf.gz
 │
 ├── locales/
 │   └── translations.json ........ Uebersetzungen (de/en)
 │
-├── ICO/ICO.ico ................... App-Icon
+├── ICO/ICO.ico .................. App-Icon
 │
 ├── lightdb_index_worker.py ...... gnomAD LightDB Hintergrund-Indexierung
 ├── translator.py ................ Uebersetzungs-Engine
@@ -206,4 +205,4 @@ V17.0 — Aktuelle Produktionsversion (Maerz 2026).
 
 ---
 
-English version: [README.md](README.md)
+🇬🇧 [English version](README.md)
