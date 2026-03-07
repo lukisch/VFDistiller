@@ -1,0 +1,14 @@
+{
+  "app_name": "VFDistiller",
+  "publisher": "CN=LukasGeiger",
+  "publisher_display": "Lukas Geiger",
+  "identity_name": "LukasGeiger.VFDistiller",
+  "version": "17.0.0.0",
+  "description": "Video- und Foto-Verarbeitungstool fuer Windows. Kostenlose Basis-Version.",
+  "executable": "VFDistiller.exe",
+  "capabilities": "internetClient",
+  "category": "Photo & Video",
+  "age_rating": "3+",
+  "privacy_url": "https://github.com/lukisch/VFDistiller",
+  "support_url": "https://github.com/lukisch/VFDistiller/issues"
+}

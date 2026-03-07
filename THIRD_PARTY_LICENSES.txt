@@ -1,0 +1,54 @@
+THIRD-PARTY LICENSES for VFDistiller
+=====================================
+
+requests
+License: Apache-2.0
+URL: https://pypi.org/project/requests/
+
+psutil
+License: BSD-3-Clause
+URL: https://pypi.org/project/psutil/
+
+Pillow
+License: HPND (Historical Permission Notice and Disclaimer)
+URL: https://pypi.org/project/Pillow/
+
+intervaltree
+License: Apache-2.0
+URL: https://pypi.org/project/intervaltree/
+
+ttkbootstrap
+License: MIT
+URL: https://pypi.org/project/ttkbootstrap/
+
+pystray
+License: LGPL-3.0
+URL: https://pypi.org/project/pystray/
+
+aiohttp
+License: Apache-2.0
+URL: https://pypi.org/project/aiohttp/
+
+scipy
+License: BSD-3-Clause
+URL: https://pypi.org/project/scipy/
+
+openpyxl
+License: MIT
+URL: https://pypi.org/project/openpyxl/
+
+reportlab
+License: BSD-3-Clause
+URL: https://pypi.org/project/reportlab/
+
+numpy
+License: BSD-3-Clause
+URL: https://pypi.org/project/numpy/
+
+biopython
+License: BSD-3-Clause (Biopython License)
+URL: https://pypi.org/project/biopython/
+
+pyfaidx
+License: BSD-3-Clause
+URL: https://pypi.org/project/pyfaidx/
