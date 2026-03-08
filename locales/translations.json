@@ -7,13 +7,77 @@
     "de": "API Key speichern",
     "en": "Save API key"
   },
+  "Abbrechen": {
+    "de": "Abbrechen",
+    "en": "Cancel"
+  },
+  "Abgeschlossen": {
+    "de": "Abgeschlossen",
+    "en": "Completed"
+  },
+  "Alle Dateien": {
+    "de": "Alle Dateien",
+    "en": "All files"
+  },
+  "Allgemeine Einstellungen...": {
+    "de": "Allgemeine Einstellungen...",
+    "en": "General Settings..."
+  },
+  "Angezeigt: 0 Varianten": {
+    "de": "Angezeigt: 0 Varianten",
+    "en": "Displayed: 0 variants"
+  },
   "Angezeigt: ? Varianten": {
     "de": "Angezeigt: ? Varianten",
     "en": "Displayed: ? variants"
   },
+  "Annotiertes VCF exportieren": {
+    "de": "Annotiertes VCF exportieren",
+    "en": "Export annotated VCF"
+  },
+  "Ansicht": {
+    "de": "Ansicht",
+    "en": "View"
+  },
+  "Auslöser": {
+    "de": "Auslöser",
+    "en": "Trigger"
+  },
+  "Auslöser:": {
+    "de": "Auslöser:",
+    "en": "Trigger:"
+  },
+  "BackgroundMaintainer aktiv": {
+    "de": "BackgroundMaintainer aktiv",
+    "en": "BackgroundMaintainer active"
+  },
+  "BackofficeCrawler läuft": {
+    "de": "BackofficeCrawler läuft",
+    "en": "BackofficeCrawler running"
+  },
+  "Bearbeiten": {
+    "de": "Bearbeiten",
+    "en": "Edit"
+  },
+  "Beenden": {
+    "de": "Beenden",
+    "en": "Quit"
+  },
   "Blacklist (ausschließen):": {
     "de": "Blacklist (ausschließen):",
     "en": "Blacklist (exclude):"
+  },
+  "Blacklist laden": {
+    "de": "Blacklist laden",
+    "en": "Load blacklist"
+  },
+  "Blacklist speichern": {
+    "de": "Blacklist speichern",
+    "en": "Save blacklist"
+  },
+  "Blacklist:": {
+    "de": "Blacklist:",
+    "en": "Blacklist:"
   },
   "CADD Filter:": {
     "de": "CADD Filter:",
@@ -22,6 +86,14 @@
   "CSV Export": {
     "de": "CSV Export",
     "en": "CSV export"
+  },
+  "CSV exportieren": {
+    "de": "CSV exportieren",
+    "en": "Export CSV"
+  },
+  "Custom: Eigene Einstellungen": {
+    "de": "Custom: Eigene Einstellungen",
+    "en": "Custom: Own settings"
   },
   "DP-Filter aktivieren (Read Depth)": {
     "de": "DP-Filter aktivieren (Read Depth)",
@@ -35,6 +107,10 @@
     "de": "Datei wählen",
     "en": "Choose file"
   },
+  "Datei:": {
+    "de": "Datei:",
+    "en": "File:"
+  },
   "Dateiauswahl": {
     "de": "Dateiauswahl",
     "en": "File selection"
@@ -43,13 +119,65 @@
     "de": "Datenalter für Refresh (Tage):",
     "en": "Data age for refresh (days)"
   },
+  "Datenbank extern öffnen": {
+    "de": "Datenbank extern öffnen",
+    "en": "Open database externally"
+  },
   "Datenbankdatei:": {
     "de": "Datenbankdatei:",
     "en": "Database file:"
   },
+  "Debug": {
+    "de": "Debug",
+    "en": "Debug"
+  },
+  "Design": {
+    "de": "Design",
+    "en": "Design"
+  },
+  "Deutsch": {
+    "de": "Deutsch",
+    "en": "Deutsch"
+  },
+  "Diese verbessern Geschwindigkeit und Offline-Faehigkeit.\nAlles kann spaeter unter Optionen > Einstellungen > Ressourcen nachgeholt werden.": {
+    "de": "Diese verbessern Geschwindigkeit und Offline-Faehigkeit.\nAlles kann spaeter unter Optionen > Einstellungen > Ressourcen nachgeholt werden.",
+    "en": "These improve speed and offline capability.\nEverything can be set up later under Options > Settings > Resources."
+  },
+  "Diesen Dialog nicht mehr anzeigen": {
+    "de": "Diesen Dialog nicht mehr anzeigen",
+    "en": "Do not show this dialog again"
+  },
+  "Einstellungen gespeichert": {
+    "de": "Einstellungen gespeichert",
+    "en": "Settings saved"
+  },
+  "Einstellungen Übernehmen": {
+    "de": "Einstellungen Übernehmen",
+    "en": "Apply Settings"
+  },
+  "English": {
+    "de": "English",
+    "en": "English"
+  },
+  "Entpacke...": {
+    "de": "Entpacke...",
+    "en": "Extracting..."
+  },
+  "Erstelle Index...": {
+    "de": "Erstelle Index...",
+    "en": "Creating index..."
+  },
   "Excel Export": {
     "de": "Excel Export",
     "en": "Excel export"
+  },
+  "Excel exportieren": {
+    "de": "Excel exportieren",
+    "en": "Export Excel"
+  },
+  "Export": {
+    "de": "Export",
+    "en": "Export"
   },
   "Export Format wählen:": {
     "de": "Export Format wählen:",
@@ -62,6 +190,42 @@
   "FILTER=PASS": {
     "de": "FILTER=PASS",
     "en": "FILTER=PASS"
+  },
+  "Fehler": {
+    "de": "Fehler",
+    "en": "Error"
+  },
+  "Fertig": {
+    "de": "Fertig",
+    "en": "Done"
+  },
+  "Fertig!": {
+    "de": "Fertig!",
+    "en": "Done!"
+  },
+  "Filter Anwenden": {
+    "de": "Filter Anwenden",
+    "en": "Apply Filter"
+  },
+  "Filter anwenden": {
+    "de": "Filter anwenden",
+    "en": "Apply filter"
+  },
+  "Filter zurücksetzen": {
+    "de": "Filter zurücksetzen",
+    "en": "Reset filter"
+  },
+  "Idle": {
+    "de": "Idle",
+    "en": "Idle"
+  },
+  "GEN-Whitelist:": {
+    "de": "GEN-Whitelist:",
+    "en": "GEN whitelist:"
+  },
+  "Globale Einstellungen": {
+    "de": "Globale Einstellungen",
+    "en": "Global Settings"
   },
   "Hauptfilter": {
     "de": "Hauptfilter",
@@ -79,6 +243,18 @@
     "de": "Laden",
     "en": "Load"
   },
+  "Log & Export": {
+    "de": "Log & Export",
+    "en": "Log & Export"
+  },
+  "Migration läuft": {
+    "de": "Migration läuft",
+    "en": "Migration running"
+  },
+  "Migriere": {
+    "de": "Migriere",
+    "en": "Migrating"
+  },
   "Nachfilter": {
     "de": "Nachfilter",
     "en": "Post-filter"
@@ -86,6 +262,14 @@
   "Nachfilter anwenden": {
     "de": "Nachfilter anwenden",
     "en": "Apply post-filter"
+  },
+  "Nachgestellte Filter": {
+    "de": "Nachgestellte Filter",
+    "en": "Subsequent filters"
+  },
+  "Nie geprüfte anzeigen (Status unbekannt)": {
+    "de": "Nie geprüfte anzeigen (Status unbekannt)",
+    "en": "Show never checked (status unknown)"
   },
   "Nur PASS Filter": {
     "de": "Nur PASS Filter",
@@ -95,21 +279,97 @@
     "de": "Nur PASS-Varianten akzeptieren (FILTER-Spalte)",
     "en": "Accept only PASS variants (FILTER column)"
   },
+  "Optionen": {
+    "de": "Optionen",
+    "en": "Options"
+  },
   "PDF Export": {
     "de": "PDF Export",
     "en": "PDF export"
+  },
+  "PDF exportieren": {
+    "de": "PDF exportieren",
+    "en": "Export PDF"
+  },
+  "Pfad waehlen...": {
+    "de": "Pfad waehlen...",
+    "en": "Choose path..."
+  },
+  "Phase: –": {
+    "de": "Phase: –",
+    "en": "Phase: –"
   },
   "Phase: —": {
     "de": "Phase: —",
     "en": "Phase: —"
   },
+  "Platzhalter: {value}, {chr}, {pos}, {ref}, {alt}, {gene}, {rsid}": {
+    "de": "Platzhalter: {value}, {chr}, {pos}, {ref}, {alt}, {gene}, {rsid}",
+    "en": "Placeholders: {value}, {chr}, {pos}, {ref}, {alt}, {gene}, {rsid}"
+  },
+  "Quality-Filter Einstellungen": {
+    "de": "Quality-Filter Einstellungen",
+    "en": "Quality Filter Settings"
+  },
+  "Quality-Filter...": {
+    "de": "Quality-Filter...",
+    "en": "Quality Filter..."
+  },
+  "Recycling der INFO-Felder überspringen": {
+    "de": "Recycling der INFO-Felder überspringen",
+    "en": "Skip INFO field recycling"
+  },
+  "Reset": {
+    "de": "Reset",
+    "en": "Reset"
+  },
+  "Reset Spalten": {
+    "de": "Reset Spalten",
+    "en": "Reset Columns"
+  },
+  "Ressourcen neu suchen": {
+    "de": "Ressourcen neu suchen",
+    "en": "Re-scan resources"
+  },
+  "Schliessen": {
+    "de": "Schliessen",
+    "en": "Close"
+  },
+  "Spalte": {
+    "de": "Spalte",
+    "en": "Column"
+  },
+  "Spalte:": {
+    "de": "Spalte:",
+    "en": "Column:"
+  },
+  "Spalten-Links": {
+    "de": "Spalten-Links",
+    "en": "Column Links"
+  },
   "Speichern": {
     "de": "Speichern",
     "en": "Save"
   },
+  "Speichern & Schließen": {
+    "de": "Speichern & Schließen",
+    "en": "Save & Close"
+  },
+  "Sprache / Language": {
+    "de": "Sprache / Language",
+    "en": "Language"
+  },
+  "Später": {
+    "de": "Später",
+    "en": "Later"
+  },
   "VCF Export": {
     "de": "VCF Export",
     "en": "VCF export"
+  },
+  "VF Distiller - Ressourcen-Einrichtung": {
+    "de": "VF Distiller - Ressourcen-Einrichtung",
+    "en": "VF Distiller - Resource Setup"
   },
   "Varianten ohne AF-Wert können verschiedene Gründe haben:": {
     "de": "Varianten ohne AF-Wert können verschiedene Gründe haben:",
@@ -119,13 +379,41 @@
     "de": "Verarbeitung läuft...",
     "en": "Processing..."
   },
+  "Vorhanden": {
+    "de": "  Vorhanden",
+    "en": "  Available"
+  },
   "Whitelist (einschließen):": {
     "de": "Whitelist (einschließen):",
     "en": "Whitelist (include):"
   },
+  "Whitelist laden": {
+    "de": "Whitelist laden",
+    "en": "Load whitelist"
+  },
+  "Whitelist speichern": {
+    "de": "Whitelist speichern",
+    "en": "Save whitelist"
+  },
+  "Willkommen! Einige optionale Ressourcen fehlen.": {
+    "de": "Willkommen! Einige optionale Ressourcen fehlen.",
+    "en": "Welcome! Some optional resources are missing."
+  },
+  "Wähle DB-Browser Executable": {
+    "de": "Wähle DB-Browser Executable",
+    "en": "Select DB Browser Executable"
+  },
+  "Wählen": {
+    "de": "Wählen",
+    "en": "Select"
+  },
   "Übernehmen": {
     "de": "Übernehmen",
     "en": "Apply"
+  },
+  "⚠️ Deaktivieren für RMA-Analyse (Reference Minor Allele)": {
+    "de": "⚠️ Deaktivieren für RMA-Analyse (Reference Minor Allele)",
+    "en": "⚠️ Disable for RMA analysis (Reference Minor Allele)"
   },
   "⚠️ EMPFOHLEN: Immer aktiviert lassen für klinische Analyse!": {
     "de": "⚠️ EMPFOHLEN: Immer aktiviert lassen für klinische Analyse!",
@@ -146,81 +434,5 @@
   "🟢 Validiert seltene in Anzeige einschließen": {
     "de": "🟢 Validiert seltene in Anzeige einschließen",
     "en": "🟢 Include validated rare in display"
-  },
-  "Angezeigt: 0 Varianten": {
-    "de": "Angezeigt: 0 Varianten",
-    "en": "Displayed: 0 variants"
-  },
-  "Annotiertes VCF exportieren": {
-    "de": "Annotiertes VCF exportieren",
-    "en": "Export annotated VCF"
-  },
-  "Blacklist laden": {
-    "de": "Blacklist laden",
-    "en": "Load blacklist"
-  },
-  "Blacklist speichern": {
-    "de": "Blacklist speichern",
-    "en": "Save blacklist"
-  },
-  "Blacklist:": {
-    "de": "Blacklist:",
-    "en": "Blacklist:"
-  },
-  "CSV exportieren": {
-    "de": "CSV exportieren",
-    "en": "Export CSV"
-  },
-  "Datei:": {
-    "de": "Datei:",
-    "en": "File:"
-  },
-  "Excel exportieren": {
-    "de": "Excel exportieren",
-    "en": "Export Excel"
-  },
-  "Export": {
-    "de": "Export",
-    "en": "Export"
-  },
-  "Fehler": {
-    "de": "Fehler",
-    "en": "Error"
-  },
-  "Filter anwenden": {
-    "de": "Filter anwenden",
-    "en": "Apply filter"
-  },
-  "Filter zurücksetzen": {
-    "de": "Filter zurücksetzen",
-    "en": "Reset filter"
-  },
-  "GEN-Whitelist:": {
-    "de": "GEN-Whitelist:",
-    "en": "GEN whitelist:"
-  },
-  "Nachgestellte Filter": {
-    "de": "Nachgestellte Filter",
-    "en": "Subsequent filters"
-  },
-  "PDF exportieren": {
-    "de": "PDF exportieren",
-    "en": "Export PDF"
-  },
-  "Phase: –": {
-    "de": "Phase: –",
-    "en": "Phase: –"
-  },
-  "Whitelist laden": {
-    "de": "Whitelist laden",
-    "en": "Load whitelist"
-  },
-  "Whitelist speichern": {
-    "de": "Whitelist speichern",
-    "en": "Save whitelist"
-  },
-  "Wählen": {
-    "de": "Wählen",
-    "en": "Select"
   }
 }

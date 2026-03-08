@@ -10500,21 +10500,65 @@ class BackofficeCrawler:
     
     """
     
+    # PID-Lock-Datei fuer Singleton-Check
+    _LOCK_FILE = str(Path.home() / ".vfdistiller" / "crawler.lock")
+
+    @classmethod
+    def is_already_running(cls):
+        """Prueft ob bereits eine Crawler-Instanz laeuft (PID-Lock)."""
+        lock_path = Path(cls._LOCK_FILE)
+        if lock_path.exists():
+            try:
+                pid = int(lock_path.read_text().strip())
+                # Pruefen ob PID noch existiert
+                if sys.platform == "win32":
+                    import ctypes
+                    kernel32 = ctypes.windll.kernel32
+                    handle = kernel32.OpenProcess(0x100000, False, pid)
+                    if handle:
+                        kernel32.CloseHandle(handle)
+                        return True
+                else:
+                    os.kill(pid, 0)
+                    return True
+            except (ValueError, OSError, PermissionError):
+                pass
+            # Stale Lock-File entfernen
+            try:
+                lock_path.unlink()
+            except OSError:
+                pass
+        return False
+
+    def _acquire_lock(self):
+        """Erstellt PID-Lock-Datei."""
+        lock_path = Path(self._LOCK_FILE)
+        lock_path.parent.mkdir(parents=True, exist_ok=True)
+        lock_path.write_text(str(os.getpid()))
+
+    def _release_lock(self):
+        """Entfernt PID-Lock-Datei."""
+        try:
+            Path(self._LOCK_FILE).unlink()
+        except OSError:
+            pass
+
     def __init__(
-        self, 
-        cache_path: str, 
-        db_path: str, 
+        self,
+        cache_path: str,
+        db_path: str,
         logger,
-        distiller=None, 
-        db=None, 
+        distiller=None,
+        db=None,
         stopflag=None,
         maintainer_cls=None,
         gene_annotator=None,
-        af_fetcher=None
+        af_fetcher=None,
+        lang: str = "de"
     ):
         """
         Initialisiert BackofficeCrawler.
-        
+
         Args:
             cache_path: Pfad zum VCF-Cache (für Migration)
             db_path: Pfad zur SQLite-DB
@@ -10525,6 +10569,7 @@ class BackofficeCrawler:
             maintainer_cls: BackgroundMaintainer-Klasse (für Dependency-Injection)
             gene_annotator: GeneAnnotator-Instanz (für Maintainer)
             af_fetcher: AFFetchController-Instanz (für Maintainer)
+            lang: Sprachcode fuer Tray-UI (default: "de")
         """
         self.cache_path = cache_path or ""
         self.db_path = db_path or ""
@@ -10536,10 +10581,28 @@ class BackofficeCrawler:
         self.gene_annotator = gene_annotator
         self.af_fetcher = af_fetcher
 
+        # Eigenstaendiger Translator (kein App-Zugang im separaten Prozess)
+        self._translations = {}
+        self._lang = lang
+        try:
+            _base = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+            _t_path = os.path.join(_base, "locales", "translations.json")
+            with open(_t_path, "r", encoding="utf-8") as f:
+                self._translations = json.load(f)
+        except Exception as e:
+            self.logger.log(f"[BackofficeCrawler] Translations not loaded: {e}")
+
         # Tray-Icon
         self.icon = None
         self._tray_thread = None
         self._running = True
+
+    def _t(self, key: str) -> str:
+        """Eigenstaendiger Translator fuer Tray-UI (kein App-Zugang)."""
+        entry = self._translations.get(key)
+        if not entry:
+            return key
+        return entry.get(self._lang, entry.get("de", key))
 
     # ========================================================================
     # TRAY-ICON
@@ -10570,9 +10633,9 @@ class BackofficeCrawler:
         self.icon = pystray.Icon(
             "BackofficeCrawler",
             icon=self._create_icon_image(),
-            title="BackofficeCrawler läuft",
+            title=self._t("BackofficeCrawler läuft"),
             menu=pystray.Menu(
-                pystray.MenuItem("Beenden", on_quit)
+                pystray.MenuItem(self._t("Beenden"), on_quit)
             )
         )
         self.icon.run()
@@ -10599,19 +10662,19 @@ class BackofficeCrawler:
         status_config = {
             "migration": {
                 "color": (0, 128, 0),  # Grün
-                "title": "Migration läuft"
+                "title": self._t("Migration läuft")
             },
             "maintainer": {
                 "color": (0, 100, 200),  # Blau
-                "title": "BackgroundMaintainer aktiv"
+                "title": self._t("BackgroundMaintainer aktiv")
             },
             "error": {
                 "color": (200, 0, 0),  # Rot
-                "title": "Fehler"
+                "title": self._t("Fehler")
             },
             "idle": {
                 "color": (128, 128, 128),  # Grau
-                "title": "Idle"
+                "title": self._t("Idle")
             }
         }
         
@@ -10633,6 +10696,10 @@ class BackofficeCrawler:
         """
         ✅ HAUPT-ENTRY-POINT: Orchestriert Migration + Maintainer.
         """
+        if self.is_already_running():
+            self.logger.log("[BackofficeCrawler] ⚠️ Bereits eine Instanz aktiv – Abbruch")
+            return
+        self._acquire_lock()
         self.logger.log("[BackofficeCrawler] 🚀 Gestartet")
         self._start_tray()
 
@@ -10746,6 +10813,7 @@ class BackofficeCrawler:
             self._update_tray_status("error")
         
         finally:
+            self._release_lock()
             self.logger.log("[BackofficeCrawler] 💤 Beendet")
 
     def stop(self):
@@ -19925,8 +19993,12 @@ class QualitySettingsDialog(ttk.Toplevel):
     def __init__(self, parent, quality_manager, af_none_manager=None):
         # ✅ FIX: title nicht in __init__ übergeben, da dies mit dem parent-Argument kollidiert
         super().__init__(parent)
-        self.title("Quality-Filter Einstellungen")
-        
+
+        # Translation helper (inherit from parent App)
+        self._t = getattr(parent, '_t', lambda k: k)
+
+        self.title(self._t("Quality-Filter Einstellungen"))
+
         self.quality_manager = quality_manager
         self.af_none_manager = af_none_manager
         self.result = None
@@ -20318,8 +20390,8 @@ class QualitySettingsDialog(ttk.Toplevel):
         
         # Toast Notification statt Messagebox
         ToastNotification(
-            title="Einstellungen gespeichert",
-            message=f"Qualitätsprofil '{preset}' wurde angewendet.",
+            title=self._t("Einstellungen gespeichert"),
+            message=f"{self._t('Quality-Filter Einstellungen')}: '{preset}'",
             bootstyle="success",
             duration=2000
         ).show_toast()
@@ -20362,7 +20434,7 @@ _RESOURCE_GROUP_LABELS = {
 _RESOURCE_GROUP_ORDER = ["reference", "database", "annotation"]
 
 
-def build_resource_cards(parent, rm, logger_inst, card_widgets=None):
+def build_resource_cards(parent, rm, logger_inst, card_widgets=None, _t=None):
     """
     Erstellt Resource-Cards gruppiert in Labelframes.
     Wird von ResourceSetupDialog UND dem Settings-Tab wiederverwendet.
@@ -20372,6 +20444,7 @@ def build_resource_cards(parent, rm, logger_inst, card_widgets=None):
         rm: ResourceManager-Instanz
         logger_inst: Logger
         card_widgets: Optional dict zum Speichern der Widget-Referenzen {key: {status_lbl, progress_var, btn_frame}}
+        _t: Optionale Uebersetzungsfunktion (key -> uebersetzter String).
 
     Returns:
         dict mit Widget-Referenzen falls card_widgets is None
@@ -20457,7 +20530,7 @@ def _build_single_resource_card(parent, key, info, is_ok, rm, logger_inst, card_
             else:
                 dl_text = "Herunterladen & Erstellen"
             dl_btn = ttk.Button(btn_frame, text=dl_text, bootstyle="success-outline",
-                                command=lambda k=key, w=widgets: _on_download_click(k, w, rm, logger_inst))
+                                command=lambda k=key, w=widgets: _on_download_click(k, w, rm, logger_inst, _t=_t))
             dl_btn.pack(side=LEFT, padx=(0, 5))
             widgets["dl_btn"] = dl_btn
 
@@ -20501,7 +20574,7 @@ def _on_browse_click(key, widgets, rm, logger_inst):
         logger_inst.log(f"[Ressourcen] {key} manuell registriert: {path}")
 
 
-def _on_download_click(key, widgets, rm, logger_inst):
+def _on_download_click(key, widgets, rm, logger_inst, _t=None):
     """Startet Download im Hintergrund-Thread."""
     cancel_event = threading.Event()
     widgets["cancel_btn"].config(command=lambda: cancel_event.set())
@@ -20516,19 +20589,31 @@ def _on_download_click(key, widgets, rm, logger_inst):
     if key.startswith("fasta_"):
         build = "GRCh37" if "37" in key else "GRCh38"
         thread = threading.Thread(target=_download_fasta_thread,
-                                  args=(build, widgets, rm, logger_inst, cancel_event, root),
+                                  args=(build, widgets, rm, logger_inst, cancel_event, root, _t),
                                   daemon=True)
     elif key == "gnomad_db":
         thread = threading.Thread(target=_download_gnomad_thread,
-                                  args=(widgets, rm, logger_inst, cancel_event, root),
+                                  args=(widgets, rm, logger_inst, cancel_event, root, _t),
                                   daemon=True)
     else:
         return
     thread.start()
 
 
-def _update_progress_safe(root, widgets, downloaded, total, phase):
-    """Thread-sicheres GUI-Update via after()."""
+def _update_progress_safe(root, widgets, downloaded, total, phase, _t=None):
+    """Thread-sicheres GUI-Update via after().
+
+    Args:
+        root: Tkinter root widget fuer after()-Aufrufe.
+        widgets: Dict mit GUI-Widgets (progress_var, phase_lbl, etc.).
+        downloaded: Heruntergeladene Bytes oder Status-String.
+        total: Gesamtgroesse in Bytes.
+        phase: Phase-String (download, extract, migrate, index, done, error).
+        _t: Optionale Uebersetzungsfunktion (key -> uebersetzter String).
+    """
+    if _t is None:
+        _t = lambda k: k
+
     def _do():
         if phase == "download" and total > 0:
             pct = downloaded / total * 100
@@ -20538,21 +20623,21 @@ def _update_progress_safe(root, widgets, downloaded, total, phase):
             widgets["phase_lbl"].config(text=f"Download: {mb_dl:.0f} / {mb_tot:.0f} MB ({pct:.1f}%)")
         elif phase == "extract":
             widgets["progress_var"].set(0)
-            widgets["phase_lbl"].config(text="Entpacke...")
+            widgets["phase_lbl"].config(text=_t("Entpacke..."))
             if "progressbar" in widgets:
                 widgets["progressbar"].config(mode="indeterminate")
                 widgets["progressbar"].start(15)
         elif phase == "migrate":
-            widgets["phase_lbl"].config(text=f"Migriere {downloaded}...")
+            widgets["phase_lbl"].config(text=f"{_t('Migriere')} {downloaded}...")
         elif phase == "index":
-            widgets["phase_lbl"].config(text="Erstelle Index...")
+            widgets["phase_lbl"].config(text=_t("Erstelle Index..."))
         elif phase == "done":
             if "progressbar" in widgets:
                 widgets["progressbar"].stop()
                 widgets["progressbar"].config(mode="determinate")
             widgets["progress_var"].set(100)
-            widgets["phase_lbl"].config(text="Fertig!")
-            widgets["status_lbl"].config(text="  Vorhanden", foreground="green")
+            widgets["phase_lbl"].config(text=_t("Fertig!"))
+            widgets["status_lbl"].config(text=f"  {_t('Vorhanden')}", foreground="green")
             widgets["cancel_btn"].pack_forget()
             if "dl_btn" in widgets:
                 widgets["dl_btn"].pack_forget()
@@ -20563,7 +20648,7 @@ def _update_progress_safe(root, widgets, downloaded, total, phase):
                 widgets["progressbar"].stop()
                 widgets["progressbar"].config(mode="determinate")
             widgets["progress_var"].set(0)
-            widgets["phase_lbl"].config(text=f"Fehler: {downloaded}", foreground="red")
+            widgets["phase_lbl"].config(text=f"{_t('Fehler')}: {downloaded}", foreground="red")
             widgets["cancel_btn"].pack_forget()
             if "dl_btn" in widgets:
                 widgets["dl_btn"].config(state="normal")
@@ -20571,11 +20656,11 @@ def _update_progress_safe(root, widgets, downloaded, total, phase):
                 widgets["browse_btn"].config(state="normal")
     try:
         root.after(0, _do)
-    except Exception:
+    except RuntimeError:
         pass
 
 
-def _download_fasta_thread(build, widgets, rm, logger_inst, cancel_event, root):
+def _download_fasta_thread(build, widgets, rm, logger_inst, cancel_event, root, _t=None):
     """FASTA-Download in Hintergrund-Thread."""
     try:
         fasta_path = FASTA_PATHS.get(build)
@@ -20601,25 +20686,25 @@ def _download_fasta_thread(build, widgets, rm, logger_inst, cancel_event, root):
                 f.write(chunk)
                 downloaded += len(chunk)
                 if downloaded % (512 * 1024) < 65536:
-                    _update_progress_safe(root, widgets, downloaded, total, "download")
+                    _update_progress_safe(root, widgets, downloaded, total, "download", _t=_t)
 
         # Entpacken
-        _update_progress_safe(root, widgets, 0, 0, "extract")
+        _update_progress_safe(root, widgets, 0, 0, "extract", _t=_t)
         with gzip.open(gz_path, "rb") as f_in, open(fasta_path, "wb") as f_out:
             shutil.copyfileobj(f_in, f_out)
         os.remove(gz_path)
 
         # Index
-        _update_progress_safe(root, widgets, 0, 0, "index")
+        _update_progress_safe(root, widgets, 0, 0, "index", _t=_t)
         build_fasta_index_global(fasta_path, logger_inst)
 
         # Registrieren
         build_key = "fasta_grch38" if "38" in build else "fasta_grch37"
         rm.register(build_key, fasta_path)
-        _update_progress_safe(root, widgets, 0, 0, "done")
+        _update_progress_safe(root, widgets, 0, 0, "done", _t=_t)
 
     except InterruptedError:
-        _update_progress_safe(root, widgets, "Abgebrochen", 0, "error")
+        _update_progress_safe(root, widgets, "Abgebrochen", 0, "error", _t=_t)
         # Cleanup
         for p in [gz_path, fasta_path]:
             if os.path.exists(p):
@@ -20629,10 +20714,10 @@ def _download_fasta_thread(build, widgets, rm, logger_inst, cancel_event, root):
                     pass
     except Exception as e:
         logger_inst.log(f"[Ressourcen] FASTA-Download Fehler: {e}")
-        _update_progress_safe(root, widgets, str(e)[:80], 0, "error")
+        _update_progress_safe(root, widgets, str(e)[:80], 0, "error", _t=_t)
 
 
-def _download_gnomad_thread(widgets, rm, logger_inst, cancel_event, root):
+def _download_gnomad_thread(widgets, rm, logger_inst, cancel_event, root, _t=None):
     """gnomAD-Download + Migration + Index in Hintergrund-Thread."""
     try:
         data_dir = os.path.join(BASE_DIR, "data")
@@ -20647,14 +20732,14 @@ def _download_gnomad_thread(widgets, rm, logger_inst, cancel_event, root):
 
             def progress_cb(dl, tot, phase, _build=build):
                 if phase == "download":
-                    _update_progress_safe(root, widgets, dl, tot, "download")
+                    _update_progress_safe(root, widgets, dl, tot, "download", _t=_t)
                 elif phase == "extract":
-                    _update_progress_safe(root, widgets, 0, 0, "extract")
+                    _update_progress_safe(root, widgets, 0, 0, "extract", _t=_t)
 
             src_db = download_build(build, logger_inst, progress_callback=progress_cb, cancel_event=cancel_event)
 
             # Migrieren
-            _update_progress_safe(root, widgets, build, 0, "migrate")
+            _update_progress_safe(root, widgets, build, 0, "migrate", _t=_t)
             lightdb_mgr.migrate_build(src_db, build, dest_db)
 
             # Temp-DB loeschen
@@ -20662,18 +20747,18 @@ def _download_gnomad_thread(widgets, rm, logger_inst, cancel_event, root):
                 os.remove(src_db)
 
         # Index
-        _update_progress_safe(root, widgets, 0, 0, "index")
+        _update_progress_safe(root, widgets, 0, 0, "index", _t=_t)
         lightdb_mgr.start_index_worker()
 
         # Registrieren
         rm.register("gnomad_db", dest_db)
-        _update_progress_safe(root, widgets, 0, 0, "done")
+        _update_progress_safe(root, widgets, 0, 0, "done", _t=_t)
 
     except InterruptedError:
-        _update_progress_safe(root, widgets, "Abgebrochen", 0, "error")
+        _update_progress_safe(root, widgets, "Abgebrochen", 0, "error", _t=_t)
     except Exception as e:
         logger_inst.log(f"[Ressourcen] gnomAD-Download Fehler: {e}")
-        _update_progress_safe(root, widgets, str(e)[:80], 0, "error")
+        _update_progress_safe(root, widgets, str(e)[:80], 0, "error", _t=_t)
 
 
 class ResourceSetupDialog:
@@ -20683,9 +20768,10 @@ class ResourceSetupDialog:
         self.rm = rm
         self.logger = logger_inst
         self.card_widgets = {}
+        self._t = getattr(parent, '_t', lambda k: k)
 
         self.win = ttk.Toplevel(parent)
-        self.win.title("VF Distiller - Ressourcen-Einrichtung")
+        self.win.title(self._t("VF Distiller - Ressourcen-Einrichtung"))
         self.win.geometry("780x620")
         self.win.transient(parent)
         self.win.grab_set()
@@ -20710,7 +20796,7 @@ class ResourceSetupDialog:
         sf = ScrolledFrame(self.win, autohide=True, padding=5)
         sf.pack(fill=BOTH, expand=YES, padx=10)
 
-        build_resource_cards(sf, self.rm, self.logger, self.card_widgets)
+        build_resource_cards(sf, self.rm, self.logger, self.card_widgets, _t=self._t)
 
         # Footer
         footer = ttk.Frame(self.win, padding=10)
@@ -20773,6 +20859,9 @@ class App(ttk.Window):
             patch_widgets(self.translator)
         except ImportError:
             self.translator = None
+
+        # Translation helper (safe for None translator)
+        self._t = self.translator.t if self.translator else (lambda k: k)
 
         # Gene Annotator
         self.gene_annotator = None
@@ -21674,7 +21763,7 @@ class App(ttk.Window):
         # Reset UI if finished
         if self.progress.phase_name == "Abgeschlossen":
              self.after(2000, lambda: self.progress_bar.configure(value=0))
-             self.after(2000, lambda: self.perc_label.config(text="Fertig"))
+             self.after(2000, lambda: self.perc_label.config(text=self._t("Fertig")))
              self.after(2000, lambda: self.eta_label.config(text=""))
         
     def on_close(self):
@@ -21880,6 +21969,7 @@ class App(ttk.Window):
                 if db_path:
                     logger.log("[App] 🚀 Starte BackofficeCrawler...")
                     
+                    _crawler_lang = getattr(getattr(self, 'translator', None), 'lang', 'de')
                     crawler = BackofficeCrawler(
                         cache_path=cache_path,  # Kann None sein
                         db_path=db_path,
@@ -21888,8 +21978,9 @@ class App(ttk.Window):
                         db=None,  # Wird im Crawler neu geöffnet falls nötig
                         stopflag=stopflag,
                         maintainer_cls=BackgroundMaintainer,
-                        gene_annotator=gene_annotator,  # ✅ NEU
-                        af_fetcher=af_fetcher  # ✅ NEU
+                        gene_annotator=gene_annotator,
+                        af_fetcher=af_fetcher,
+                        lang=_crawler_lang
                     )
                     
                     # Crawler in Thread starten
@@ -23607,24 +23698,24 @@ class App(ttk.Window):
         
         # Ansicht
         viewmenu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Ansicht", menu=viewmenu)
+        menubar.add_cascade(label=self._t("Ansicht"), menu=viewmenu)
         self._viewmenu_vars = {}
         for col in self.columns:
             var = tk.BooleanVar(value=(col in self.visible_columns))
             self._viewmenu_vars[col] = var
             viewmenu.add_checkbutton(label=COLUMN_LABELS.get(col, col), variable=var, command=self._apply_column_visibility)
         viewmenu.add_separator()
-        viewmenu.add_command(label="Reset Spalten", command=self._reset_columns)
+        viewmenu.add_command(label=self._t("Reset Spalten"), command=self._reset_columns)
 
         # Optionen
         optionsmenu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Optionen", menu=optionsmenu)
-        optionsmenu.add_command(label="Allgemeine Einstellungen...", command=self.open_general_settings)
+        menubar.add_cascade(label=self._t("Optionen"), menu=optionsmenu)
+        optionsmenu.add_command(label=self._t("Allgemeine Einstellungen..."), command=self.open_general_settings)
         optionsmenu.add_separator()
-        optionsmenu.add_command(label="Quality-Filter...", command=self.open_quality_settings)
+        optionsmenu.add_command(label=self._t("Quality-Filter..."), command=self.open_quality_settings)
         optionsmenu.add_separator()
         optionsmenu.add_checkbutton(
-            label="Recycling der INFO-Felder überspringen",
+            label=self._t("Recycling der INFO-Felder überspringen"),
             variable=self.skip_info_recycling,
             onvalue=True, offvalue=False, command=self._save_settings
         )
@@ -23632,20 +23723,20 @@ class App(ttk.Window):
         # Sprache
         optionsmenu.add_separator()
         langmenu = tk.Menu(optionsmenu, tearoff=0)
-        optionsmenu.add_cascade(label="Sprache / Language", menu=langmenu)
+        optionsmenu.add_cascade(label=self._t("Sprache / Language"), menu=langmenu)
         langmenu.add_command(label="Deutsch", command=lambda: self.change_language("de"))
         langmenu.add_command(label="English", command=lambda: self.change_language("en"))
 
         # Design-Menü
         designmenu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Design", menu=designmenu)
+        menubar.add_cascade(label=self._t("Design"), menu=designmenu)
         for theme in ["cosmo", "flatly", "lumen", "darkly", "superhero", "solar"]:
             designmenu.add_command(label=theme.capitalize(), command=lambda t=theme: self._change_theme(t))
             
         # ✅ NEU: Debug-Menü mit externem Viewer
         debugmenu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Debug", menu=debugmenu)
-        debugmenu.add_command(label="Datenbank extern öffnen", command=self.open_external_db)
+        menubar.add_cascade(label=self._t("Debug"), menu=debugmenu)
+        debugmenu.add_command(label=self._t("Datenbank extern öffnen"), command=self.open_external_db)
 
         # =====================================================================
         # 1. TOP BAR (Datei, Scan-Settings)
@@ -23901,7 +23992,7 @@ class App(ttk.Window):
         res_sf = ScrolledFrame(tab_resources, autohide=True, padding=5)
         res_sf.pack(fill=BOTH, expand=YES)
         self._settings_resource_widgets = {}
-        build_resource_cards(res_sf, get_resource_manager(), self.logger, self._settings_resource_widgets)
+        build_resource_cards(res_sf, get_resource_manager(), self.logger, self._settings_resource_widgets, _t=self._t)
 
         res_btn_frame = ttk.Frame(tab_resources, padding=5)
         res_btn_frame.pack(fill=X)
@@ -23929,8 +24020,8 @@ class App(ttk.Window):
         
         link_cols = ("Spalte", "Auslöser", "URL Template")
         link_tree = ttk.Treeview(tree_container, columns=link_cols, show="headings", height=10)
-        link_tree.heading("Spalte", text="Spalte")
-        link_tree.heading("Auslöser", text="Auslöser")
+        link_tree.heading("Spalte", text=self._t("Spalte"))
+        link_tree.heading("Auslöser", text=self._t("Auslöser"))
         link_tree.heading("URL Template", text="URL Template")
         link_tree.column("Spalte", width=80)
         link_tree.column("Auslöser", width=80)
@@ -24154,8 +24245,8 @@ class App(ttk.Window):
     def choose_db_viewer(self):
         """Dateidialog für DB-Viewer."""
         path = filedialog.askopenfilename(
-            title="Wähle DB-Browser Executable",
-            filetypes=[("Executables", "*.exe"), ("Alle Dateien", "*.*")]
+            title=self._t("Wähle DB-Browser Executable"),
+            filetypes=[("Executables", "*.exe"), (self._t("Alle Dateien"), "*.*")]
         )
         if path:
             self.external_db_viewer.set(path)
